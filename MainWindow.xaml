@@ -1,0 +1,182 @@
+﻿<Window x:Class="CrashCAN.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:db="clr-namespace:Codeplex.Dashboarding;assembly=Codeplex.Dashboarding"
+        Title="CrashCAN" Height="654" Width="1094" UseLayoutRounding="False" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+            <GradientStop Color="#FFD5D8D8" Offset="0" />
+            <GradientStop Color="#FF009A32" Offset="1" />
+        </LinearGradientBrush>
+    </Window.Background>
+    <Grid HorizontalAlignment="Left" Width="1094" Margin="0,0,-6,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="123*" />
+            <RowDefinition Height="156*" />
+            <RowDefinition Height="140*" />
+        </Grid.RowDefinitions>
+        <StatusBar Name="statusBar" Height="23" VerticalAlignment="Bottom" Grid.Row="2">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="868*"/>
+                            <ColumnDefinition Width="56*"/>
+                            <ColumnDefinition Width="107*"/>
+                            <ColumnDefinition Width="63*"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock Name="statusBarText" Text="" />
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1">
+                <TextBlock Name="statusBarBusLoadLabel" Text="Bus Load"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <ProgressBar Height="10" Width="100" Value="{Binding Path=BusLoad}"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="3">
+                <TextBlock Name="statusBarBusLoadText" Text="{Binding Path=BusLoad}"/>
+            </StatusBarItem>
+
+        </StatusBar>
+        <GroupBox Header="Adapter" Height="192.52" Name="groupBox1" VerticalAlignment="Top" Margin="8,0,0,0" HorizontalAlignment="Left" Width="128" Grid.RowSpan="2"></GroupBox>
+        <Grid Width="116" Margin="12,20.96,0,0" Height="163.04" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.RowSpan="2">
+            <Button Content="Connect" Height="23" Margin="18,23,23,0" Name="connectButton" VerticalAlignment="Top" Click="connectButton_Click" />
+            <RadioButton Content="CAN Connected" HorizontalAlignment="Left" Margin="6,67.12,0,0" Name="connectedRadio" Height="16" VerticalAlignment="Top" />
+        </Grid>
+        <Grid Grid.Row="2" Height="114.52" Name="grid1" VerticalAlignment="Top" Margin="0,0,35,0"></Grid>
+        <ListView Height="192" HorizontalAlignment="Left" Margin="362,1,0,0" Name="rcvMessageList" VerticalAlignment="Top" Width="236" Grid.RowSpan="2" BorderThickness="2">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Identifier" Width="60" DisplayMemberBinding="{Binding Identifier}" />
+                    <GridViewColumn Header="Data" Width="200" DisplayMemberBinding="{Binding Data}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <GroupBox Header="Inverter Control" Height="194" HorizontalAlignment="Left" Margin="142,-1,0,0" Name="setPointsGroupBox" VerticalAlignment="Top" Width="213" Grid.RowSpan="2" IsEnabled="True">
+            <Grid Height="177">
+                <xctk:IntegerUpDown Name="kwCommand" Value="{Binding Path=KwCommand}" FormatString="N0" Increment="1" Maximum="100" Minimum="-100" VerticalAlignment="Top" Margin="78,19,0,0" ToolTip="-100 to 100%" DataContext="{Binding}" AllowSpin="True" HorizontalAlignment="Left" Width="67" />
+                <xctk:IntegerUpDown Name="kwRamp" Value="{Binding Path=KwRampRate}" FormatString="N0" Increment="1" Maximum="500" Minimum="0" VerticalAlignment="Top" Margin="78,45,0,0" ToolTip="1 to 500kw/s" HorizontalAlignment="Left" Width="67" />
+                <xctk:IntegerUpDown Name="varCommand" Value="{Binding Path=VarCommand}" FormatString="N0" Increment="1" Maximum="100" Minimum="-100" VerticalAlignment="Top" Margin="78,72,0,0" ToolTip="-100 to 100%" HorizontalAlignment="Left" Width="67" />
+                <xctk:IntegerUpDown Name="varRamp" Value="{Binding Path=VarRampRate}" FormatString="N0" Increment="1" Maximum="500" Minimum="0" VerticalAlignment="Top" Margin="78,98,0,0" ToolTip="1-500kVar/s" HorizontalAlignment="Left" Width="67" />
+                <Label Content="Real Power" Height="28" HorizontalAlignment="Left" Margin="9,16,0,0" Name="label1" VerticalAlignment="Top" />
+                <Label Content="Ramp Rate" Height="28" HorizontalAlignment="Left" Margin="10,42,0,0" Name="label2" VerticalAlignment="Top" />
+                <Label Content="Imag Power" HorizontalAlignment="Left" Margin="5,70,0,0" Name="label3" Height="28" VerticalAlignment="Top" RenderTransformOrigin="0.826,0.551" />
+                <Label Content="Ramp Rate" Height="28" HorizontalAlignment="Left" Margin="10,95,0,0" Name="label4" VerticalAlignment="Top" />
+                <Label Content="%" Height="28" HorizontalAlignment="Left" Margin="147,16,0,0" Name="label5" VerticalAlignment="Top" />
+                <Label Content="kW/s" Height="28" HorizontalAlignment="Left" Margin="147,42,0,0" Name="label6" VerticalAlignment="Top" />
+                <Label Content="%" Height="28" HorizontalAlignment="Left" Margin="147,69,0,0" Name="label7" VerticalAlignment="Top" />
+                <Label Content="kVar/s" Height="28" HorizontalAlignment="Left" Margin="147,95,0,0" Name="label8" VerticalAlignment="Top" />
+                <Button Content="Enable ESS" Height="23" HorizontalAlignment="Left" Margin="6,137.08,0,0" Name="enableButton" VerticalAlignment="Top" Width="75" Click="enableButton_Click" />
+                <Button Content="Update Setpoints" Height="23" HorizontalAlignment="Left" Margin="89,137,0,0" Name="updateSetpointsButton" VerticalAlignment="Top" Width="106" Click="updateSetpointsButton_Click" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Battery Status" Height="391" HorizontalAlignment="Left" Margin="8,0,0,28" Name="groupBox3" VerticalAlignment="Bottom" Width="288" Grid.RowSpan="2" Grid.Row="1">
+            <Grid Height="369" Width="280">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64*" />
+                    <RowDefinition Height="305*" />
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding IMRCont}" Height="23" HorizontalAlignment="Left" Margin="175,27.56,0,0" Name="imrContBox" VerticalAlignment="Top" Width="73" IsReadOnly="True" />
+                <TextBox Text="{Binding IMD}" Height="23" HorizontalAlignment="Left" Margin="175,57.04,0,0" Name="imdBox" VerticalAlignment="Top" Width="73" Grid.RowSpan="2" IsReadOnly="True" />
+                <TextBox Text="{Binding IMR}" Height="23" HorizontalAlignment="Left" Margin="175,22.12,0,0" Name="imrBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding SOCAvailable}" Height="23" HorizontalAlignment="Left" Margin="175,51.6,0,0" Name="socAvailableBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding SOCConnected}" Height="23" HorizontalAlignment="Left" Margin="175,80.6,0,0" Name="socConnectedBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding BMMConnected}" Height="23" HorizontalAlignment="Left" Margin="175,109.6,0,0" Name="bmmConnectedBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding MaxT}" Height="23" HorizontalAlignment="Left" Margin="175,138.12,0,0" Name="maxTBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding VMD}" Height="23" HorizontalAlignment="Left" Margin="175,167.12,0,0" Name="vmdBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding VMR}" Height="23" HorizontalAlignment="Left" Margin="175,196.12,0,0" Name="vmrBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding ActualV}" Height="23" HorizontalAlignment="Left" Margin="175,225.12,0,0" Name="actualVBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding ActualI}" Height="23" HorizontalAlignment="Left" Margin="175,254.12,0,0" Name="actualIBox" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <Label Content="Max Continuous Regen Current" Height="28" HorizontalAlignment="Left" Margin="0,25.56,0,0" Name="label9" VerticalAlignment="Top" />
+                <Label Content="Max Discharge Current" Height="28" HorizontalAlignment="Left" Margin="45.22,55.04,0,0" Name="label10" VerticalAlignment="Top" Grid.RowSpan="2" />
+                <Label Content="Max Regen Current" Height="28" HorizontalAlignment="Left" Margin="64.003,20.12,0,0" Name="label11" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="SOC Available" Height="28" HorizontalAlignment="Left" Margin="92.366,49.6,0,0" Name="label12" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="SOC Connected" Height="28" HorizontalAlignment="Left" Margin="82.846,78.6,0,0" Name="label13" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="BMMs Connected" Height="28" HorizontalAlignment="Left" Margin="72.17,107.6,0,0" Name="label14" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Max Cell Temperature" Height="28" HorizontalAlignment="Left" Margin="49.953,136.12,0,0" Name="label15" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Minimum Discharge Voltage" Height="28" HorizontalAlignment="Left" Margin="15.56,165.12,0,0" Name="label16" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Maximum Charge Voltage" Height="28" HorizontalAlignment="Left" Margin="28.17,194.12,0,0" Name="label17" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Actual Battery Voltage" Height="28" HorizontalAlignment="Left" Margin="45.22,223.12,0,0" Name="label18" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Actual Battery Current" Height="28" HorizontalAlignment="Left" Margin="49.45,252.12,0,0" Name="label19" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="A" Height="28" HorizontalAlignment="Left" Margin="249.26,26.52,0,0" Name="label20" VerticalAlignment="Top" />
+                <Label Content="A" Height="28" HorizontalAlignment="Left" Margin="249.26,55.04,0,0" Name="label21" VerticalAlignment="Top" Grid.RowSpan="2" />
+                <Label Content="A" Height="28" HorizontalAlignment="Left" Margin="249.26,20.12,0,0" Name="label22" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="%" Height="28" HorizontalAlignment="Left" Margin="249.26,49.6,0,0" Name="label23" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="%" Height="28" HorizontalAlignment="Left" Margin="247.18,78.6,0,0" Name="label24" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="C" Height="28" HorizontalAlignment="Left" Margin="247.57,136.12,0,0" Name="label25" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="A" Height="28" HorizontalAlignment="Left" Margin="249.26,252.12,0,0" Name="label26" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="V" Height="28" HorizontalAlignment="Left" Margin="247.18,165.12,0,0" Name="label27" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="V" Height="28" HorizontalAlignment="Left" Margin="247.18,194.12,0,0" Name="label28" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="V" Height="28" HorizontalAlignment="Left" Margin="249.26,223.12,0,0" Name="label29" VerticalAlignment="Top" Grid.Row="1" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Storage Inverter Status" Height="391" HorizontalAlignment="Left" Margin="313,0,0,28" x:Name="groupBox3_Copy" VerticalAlignment="Bottom" Width="288" Grid.RowSpan="2" Grid.Row="1">
+            <Grid Height="369" Width="280">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64*" />
+                    <RowDefinition Height="305*" />
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding GridFrequency,StringFormat={}{0:F2}}" Height="23" HorizontalAlignment="Left" Margin="154,58,0,0" x:Name="imrContBox1" VerticalAlignment="Top" Width="73" IsReadOnly="True" Grid.RowSpan="2" />
+                <TextBox Text="{Binding PhaseVoltage,StringFormat={}{0:F1}}" Height="23" HorizontalAlignment="Left" Margin="154,23,0,0" x:Name="imdBox1" VerticalAlignment="Top" Width="73" IsReadOnly="True" Grid.Row="1" />
+                <TextBox Text="{Binding PhaseCurrent,StringFormat={}{0:F1}}" Height="23" HorizontalAlignment="Left" Margin="154,52,0,0" x:Name="imrBox1" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding RealPower}" Height="23" HorizontalAlignment="Left" Margin="154,82,0,0" x:Name="socAvailableBox1" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding ImagPower}" Height="23" HorizontalAlignment="Left" Margin="154,111,0,0" x:Name="socConnectedBox1" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding SwitchTemperature,StringFormat={}{0:F1}}" Height="23" HorizontalAlignment="Left" Margin="154,140,0,0" x:Name="bmmConnectedBox1" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding FaultWord}" Height="23" HorizontalAlignment="Left" Margin="154,168,0,0" x:Name="maxTBox1" VerticalAlignment="Top" Width="73" Grid.Row="1" IsReadOnly="True" />
+                <TextBox Text="{Binding InverterStateString}" Height="23" HorizontalAlignment="Left" Margin="94,10,0,0" x:Name="vmdBox1" VerticalAlignment="Top" Width="133" IsReadOnly="True" />
+                <Label Content="Grid Frequency" Height="28" HorizontalAlignment="Left" Margin="60,56,0,0" x:Name="label30" VerticalAlignment="Top" Grid.RowSpan="2" />
+                <Label Content="Phase Voltage" Height="28" HorizontalAlignment="Left" Margin="69,21,0,0" x:Name="label31" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Phase Current" Height="28" HorizontalAlignment="Left" Margin="70,50,0,0" x:Name="label32" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Real Power" Height="28" HorizontalAlignment="Left" Margin="85,80,0,0" x:Name="label33" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Imag Power" Height="28" HorizontalAlignment="Left" Margin="81,109,0,0" x:Name="label34" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Switch Temp" Height="28" HorizontalAlignment="Left" Margin="76,138,0,0" x:Name="label35" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Fault" Height="28" HorizontalAlignment="Left" Margin="118,166,0,0" x:Name="label36" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Inverter State" Height="28" HorizontalAlignment="Left" Margin="13,7,0,0" x:Name="label37" VerticalAlignment="Top" />
+                <Label Content="Hz" Height="28" HorizontalAlignment="Left" Margin="228,57,0,0" x:Name="label41" VerticalAlignment="Top" Grid.RowSpan="2" />
+                <Label Content="Vrms" Height="28" HorizontalAlignment="Left" Margin="228,21,0,0" x:Name="label42" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="Arms" Height="28" HorizontalAlignment="Left" Margin="228,50,0,0" x:Name="label43" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="kW" Height="28" HorizontalAlignment="Left" Margin="228,80,0,0" x:Name="label44" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="kVar" Height="28" HorizontalAlignment="Left" Margin="226,109,0,0" x:Name="label45" VerticalAlignment="Top" Grid.Row="1" />
+                <Label Content="C" Height="28" HorizontalAlignment="Left" Margin="227,138,0,0" x:Name="label46" VerticalAlignment="Top" Grid.Row="1" />
+                <TextBox HorizontalAlignment="Left" Height="23" Margin="76,289,0,-7" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Dashboard" HorizontalAlignment="Left" Margin="618,0,0,28" Grid.RowSpan="3" Width="451">
+            <Grid Margin="10,0,-10,0">
+                <db:Dial360 Value="{Binding ImagPower}" Margin="247,166,0,240" Height="Auto" Width="187" BorderThickness="0" Minimum="-500" Maximum="500" RenderTransformOrigin="0.492,0.488" HorizontalAlignment="Left"/>
+                <db:Dial360 Value="{Binding RealPower}" Margin="32,164,234,242" Height="Auto" Width="Auto" BorderThickness="0" Minimum="-500" Maximum="500"/>
+                <Label Content="Real Power" HorizontalAlignment="Left" Margin="78,318,0,0" VerticalAlignment="Top"/>
+                <Label Content="Imag Power" HorizontalAlignment="Left" Margin="291,318,0,0" VerticalAlignment="Top"/>
+                <Label Content="% SOC Trend" HorizontalAlignment="Left" Margin="177,531,0,0" VerticalAlignment="Top"/>
+                <Label Content="Disch" HorizontalAlignment="Left" Margin="10,184,0,0" VerticalAlignment="Top"/>
+                <Label Content="Charge" HorizontalAlignment="Left" Margin="177,184,0,0" VerticalAlignment="Top"/>
+                <db:PerformanceMonitor Value="{Binding SOCAvailable}" Margin="1,350,0,0" HorizontalAlignment="Left" Width="427" Height="184" VerticalAlignment="Top"
+                    GridLine="White"
+                    GraphLine="LightGreen"
+                    Axis="Red"
+                    ValueTextColor="Yellow"
+                    GraphFillFrom="Blue"
+                    GraphFillTo="#FFFD0909"/>
+                <db:PlainThermometer Value="{Binding SOCAvailable}" Margin="208,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="136">
+                    <db:PlainThermometer.MercuryColorRange>
+                        <db:ColorPoint HiColor="#FFEEE41C" LowColor="#FFF02020"/>
+                    </db:PlainThermometer.MercuryColorRange>
+                </db:PlainThermometer>
+                <Label Content="% SOC" HorizontalAlignment="Left" Margin="200,135,0,0" VerticalAlignment="Top" Height="23"/>
+                <db:Dial180North Value="{Binding BMMConnected}" Margin="32,40,245,0" Maximum="8" VerticalAlignment="Top"></db:Dial180North>
+                <db:Dial180North Value="{Binding MaxT}" Margin="247,40,30,0" Maximum="36" VerticalAlignment="Top"></db:Dial180North>
+                <Label Content="Strings Online" HorizontalAlignment="Left" Margin="74,135,0,0" VerticalAlignment="Top"/>
+                <Label Content="Max Cell Temp" HorizontalAlignment="Left" Margin="286,135,0,0" VerticalAlignment="Top"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>
+
