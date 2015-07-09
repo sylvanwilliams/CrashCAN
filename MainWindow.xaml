@@ -146,7 +146,19 @@
                 <Label Content="kW" Height="28" HorizontalAlignment="Left" Margin="228,80,0,0" x:Name="label44" VerticalAlignment="Top" Grid.Row="1" />
                 <Label Content="kVar" Height="28" HorizontalAlignment="Left" Margin="226,109,0,0" x:Name="label45" VerticalAlignment="Top" Grid.Row="1" />
                 <Label Content="C" Height="28" HorizontalAlignment="Left" Margin="227,138,0,0" x:Name="label46" VerticalAlignment="Top" Grid.Row="1" />
-                <TextBox HorizontalAlignment="Left" Height="23" Margin="76,289,0,-7" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+                <GroupBox Header="Charge Cycling" HorizontalAlignment="Left" Margin="6,189,0,0" Grid.Row="1" VerticalAlignment="Top" Height="116" Width="266">
+                    <Grid>
+                        <xctk:IntegerUpDown x:Name="minSOCBox" Value="{Binding MinSOC}" FormatString="N0" Increment="1" Maximum="100" Minimum="0" VerticalAlignment="Top" Margin="182,0,0,0" ToolTip="0 to 100%" DataContext="{Binding}" AllowSpin="True" HorizontalAlignment="Left" Width="67" />
+                        <xctk:IntegerUpDown x:Name="maxSOCBox" Value="{Binding MaxSOC}" FormatString="N0" Increment="1" Maximum="100" Minimum="0" VerticalAlignment="Top" Margin="182,23,0,0" ToolTip="0 to 100%" DataContext="{Binding}" AllowSpin="True" HorizontalAlignment="Left" Width="67"  />
+                        <xctk:IntegerUpDown x:Name="chgRateBox" Value="{Binding ChargeRate}" FormatString="N0" Increment="1" Maximum="0" Minimum="-100" VerticalAlignment="Top" Margin="182,46,0,0" ToolTip="-100 to 0%" DataContext="{Binding}" AllowSpin="True" HorizontalAlignment="Left" Width="67" />
+                        <xctk:IntegerUpDown x:Name="disChgRateBox" Value="{Binding DischargeRate}" FormatString="N0" Increment="1" Maximum="100" Minimum="0" VerticalAlignment="Top" Margin="182,69,0,0" ToolTip="0 to 100%" DataContext="{Binding}" AllowSpin="True" HorizontalAlignment="Left" Width="67" />
+                        <Label Content="Min SOC" Height="28" HorizontalAlignment="Left" Margin="125,-3,0,0" x:Name="label35_Copy" VerticalAlignment="Top" />
+                        <Label Content="Max SOC" Height="28" HorizontalAlignment="Left" Margin="123,20,0,0" x:Name="label35_Copy1" VerticalAlignment="Top" />
+                        <Label Content="Charge Rate" Height="28" HorizontalAlignment="Left" Margin="107,43,0,0" x:Name="label35_Copy2" VerticalAlignment="Top" />
+                        <Label Content="Discharge Rate" Height="28" HorizontalAlignment="Left" Margin="93,66,0,0" x:Name="label35_Copy3" VerticalAlignment="Top" />
+                        <Button Content="Enable" HorizontalAlignment="Left" Margin="27,21,0,0" VerticalAlignment="Top" Width="75" Name="enableChargeCycleButton" Click="enableChargeCycleButton_Click"/>
+                    </Grid>
+                </GroupBox>
             </Grid>
         </GroupBox>
         <GroupBox Header="Dashboard" HorizontalAlignment="Left" Margin="618,0,0,28" Grid.RowSpan="3" Width="451">

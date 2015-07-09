@@ -274,6 +274,7 @@ namespace AE.CANOPEN
             msg[7] = 0;
 
             mWriter.SendMessage(msg);
+            Thread.Sleep(50);
         }
 
         public void GetSDO(uint nodeId, UInt16 mainIndex, byte subIndex)

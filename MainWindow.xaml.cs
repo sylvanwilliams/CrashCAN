@@ -27,11 +27,15 @@ namespace CrashCAN
     /// </summary>
     /// 
 
+    enum ChargeState { Charging,Discharging};
+
     public partial class MainWindow : Window
     {
         IxxatCANOpenUSB mCanController = null;
         ObservableCollection<AECanMessageDisplay> msgQueue = null;
         AEViewModel viewData = null;
+        Timer socTimer = null;
+        TimerCallback socTimerCallback = null;
 
         int mMsgCount = 0;
         const double BMMVoltageScaleFactor = .025;
@@ -42,6 +46,9 @@ namespace CrashCAN
         const int mMaxRcvQueueLength = 500;
         const int DSPNodeId = 1;
         const int MBMMNodeId = 42;
+        const int socTimerInterval = 2000;   //2 sec
+
+        static ChargeState chargeState = ChargeState.Discharging;
 
         public MainWindow()
         {
@@ -59,6 +66,8 @@ namespace CrashCAN
             viewData.SOCAvailable = 100;
 
             setPointsGroupBox.IsEnabled = false;
+
+            socTimerCallback = new TimerCallback(ChargeCycleTask);
 
         }
 
@@ -245,6 +254,49 @@ namespace CrashCAN
             }
         }
 
+        private void EnableChargeCycle(bool enable = true)
+        {
+            if(enable == true)
+            {
+                socTimer = new Timer(socTimerCallback, new object(), socTimerInterval, socTimerInterval);
+            }
+            else
+            {
+                socTimer.Dispose();
+            }
+        }
+
+        private void ChargeCycleTask(object obj)
+        {
+            
+            if( chargeState == ChargeState.Discharging )
+            {
+                if( viewData.SOCConnected <= viewData.MinSOC )
+                {
+                    mCanController.SendSDO(DSPNodeId, AESXCANObjects.KWCommand, 0, viewData.ChargeRate);
+                    chargeState = ChargeState.Charging;
+                }
+                else
+                {
+                    mCanController.SendSDO(DSPNodeId, AESXCANObjects.KWCommand, 0, viewData.DischargeRate);
+                    chargeState = ChargeState.Discharging;
+                }
+            }
+            else if( chargeState == ChargeState.Charging )
+            {
+                if( viewData.SOCConnected >= viewData.MaxSOC )
+                {
+                    mCanController.SendSDO(DSPNodeId, AESXCANObjects.KWCommand, 0, viewData.DischargeRate);
+                    chargeState = ChargeState.Discharging;
+                }
+                else
+                {
+                    mCanController.SendSDO(DSPNodeId, AESXCANObjects.KWCommand, 0, viewData.ChargeRate);
+                    chargeState = ChargeState.Charging;
+                }
+            }
+        }
+
         private void updateSetpointsButton_Click(object sender, RoutedEventArgs e)
         {
             UpdateSetpoints();
@@ -267,13 +319,29 @@ namespace CrashCAN
             mCanController.GetSDO(DSPNodeId, AESXCANObjects.VarCommand, 0);
             mCanController.GetSDO(DSPNodeId, AESXCANObjects.VarRampRate, 0);
         }
+
+        private void enableChargeCycleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (enableChargeCycleButton.Content.ToString() == "Enable")
+            {
+                enableChargeCycleButton.Content = "Disable";
+                kwCommand.IsEnabled = false;
+                EnableChargeCycle();
+            }
+            else
+            {
+                enableChargeCycleButton.Content = "Enable";
+                kwCommand.IsEnabled = true;
+                EnableChargeCycle(false);
+            }
+        }
     }
 
     public class AEViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private Int16 kwCommand, kwRampRate, varCommand, varRampRate;
-        private Int16 imrCont, imr, imd, socAvailable, socConnected, bmmConnected, maxT, vmd, vmr, actualV, actualI,realPower,imagPower;
+        private Int16 imrCont, imr, imd, socAvailable, socConnected, bmmConnected, maxT, vmd, vmr, actualV, actualI,realPower,imagPower,minSOC,maxSOC,chargeRate,dischargeRate;
         private UInt16 inverterState, faultWord,busLoad;
         private Double gridFrequency, phaseVoltage, phaseCurrent, switchTemperature;
         private Dictionary<UInt16, String> stateDictionary;
@@ -282,6 +350,7 @@ namespace CrashCAN
         public AEViewModel()
         {
             kwCommand = kwRampRate = varCommand = varRampRate = 0;
+            minSOC = maxSOC = chargeRate = dischargeRate = 0;
             InitStateDictionary();
 
         }
@@ -657,6 +726,46 @@ namespace CrashCAN
             {
                 this.busLoad = value;
                 NotifyPropertyChanged("BusLoad");
+            }
+        }
+
+        public Int16 MinSOC
+        {
+            get { return this.minSOC; }
+            set
+            {
+                this.minSOC = value;
+                NotifyPropertyChanged("MinSOC");
+            }
+        }
+
+        public Int16 MaxSOC
+        {
+            get { return this.maxSOC; }
+            set
+            {
+                this.maxSOC = value;
+                NotifyPropertyChanged("MaxSOC");
+            }
+        }
+
+        public Int16 ChargeRate
+        {
+            get { return this.chargeRate; }
+            set
+            {
+                this.chargeRate = value;
+                NotifyPropertyChanged("ChargeRate");
+            }
+        }
+
+        public Int16 DischargeRate
+        {
+            get { return this.dischargeRate; }
+            set
+            {
+                this.dischargeRate = value;
+                NotifyPropertyChanged("DischargeRate");
             }
         }
 
